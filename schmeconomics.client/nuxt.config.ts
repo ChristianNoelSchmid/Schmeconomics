@@ -26,7 +26,7 @@ export default defineNuxtConfig({
       theme_color: '#fff',
       start_url: '/',
       description: 'A simple budgeting app',
-      display: 'fullscreen',
+      display: 'standalone',
       icons: [
         {
           src: 'pwa-192x192.png',
@@ -38,7 +38,7 @@ export default defineNuxtConfig({
           src: 'pwa-512x512.png',
           sizes: '512x512',
           type: 'image/png',
-          purpose: 'any maskable'
+          purpose: 'any'
         },
       ],
     },
