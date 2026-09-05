@@ -19,14 +19,14 @@ export default defineNuxtConfig({
     '@/styles.css'
   ],
   pwa: {
-    registerType: 'prompt',
+    registerType: 'autoUpdate',
     manifest: {
       name: 'Schmeconomics',
       short_name: '$ch',
+      theme_color: '#fff',
       start_url: '/',
       description: 'A simple budgeting app',
       display: 'fullscreen',
-      theme_color: '#fff',
       icons: [
         {
           src: 'pwa-192x192.png',
@@ -43,16 +43,14 @@ export default defineNuxtConfig({
       ],
     },
     workbox: {
-      globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
-      cleanupOutdatedCaches: true,
-      clientsClaim: true
+      globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff2}'],
+      navigateFallback: '/'
     },
     devOptions: {
       enabled: false, // Allows you to test PWA features in dev mode
-      suppressWarnings: true,
-      navigateFallback: '/',
-      navigateFallbackAllowlist: [/^\/$/],
-      type: 'module',
+    },
+    client: {
+      installPrompt: true
     }
   },
 })
