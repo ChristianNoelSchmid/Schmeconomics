@@ -22,8 +22,9 @@ export default defineNuxtConfig({
     registerType: 'autoUpdate',
     manifest: {
       name: 'Schmeconomics',
-      short_name: 'Schm',
       theme_color: '#ffffff',
+      start_url: '/',
+      display: 'fullscreen',
       icons: [
         {
           src: 'pwa-192x192.png',
