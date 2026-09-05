@@ -14,18 +14,21 @@ onMounted(() => {
 </script>
 
 <template>
-  <UApp>
-    <UContainer>
-      <NavigationHeader />
-      <UMain>
-        <NuxtLoadingIndicator :height="3" />
-        <NuxtPage />
-      </UMain>
-      <AppFooter />
-    </UContainer>
-    <PromptModal />
-    <GlobalLoadingIndicator />
-  </UApp>
+  <div>
+  <VitePwaManifest />
+    <UApp>
+      <UContainer>
+        <NavigationHeader />
+        <UMain>
+          <NuxtLoadingIndicator :height="3" />
+          <NuxtPage />
+        </UMain>
+        <AppFooter />
+      </UContainer>
+      <PromptModal />
+      <GlobalLoadingIndicator />
+    </UApp>
+  </div>
 </template>
 
 <style>
