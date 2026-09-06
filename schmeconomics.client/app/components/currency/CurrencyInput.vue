@@ -5,7 +5,7 @@ const inputEl = ref<{ inputRef: { $el: HTMLInputElement }} | null>(null);
 const props = withDefaults(defineProps<{readonly?: boolean}>(), { readonly: false });
 const model = defineModel<number>();
 const parts = ref<CurrencyInputPart[]>([new CurrencyInputPart(CurrencyPartType.Plus, model.value!)]);
-const keyValue = ref<string>("");
+
 function addOperator(
   operatorString: string
 ) {
@@ -36,36 +36,53 @@ function formattedPart(value: number | undefined): string {
   return strValue.slice(0, strValue.length - 2) + '.' + strValue.slice(strValue.length - 2);
 }
 
-function handleInput(keyboardEvent: KeyboardEvent) {
-  if (!model.value) parts.value = [new CurrencyInputPart(CurrencyPartType.Plus, 0)];
-  if (keyboardEvent.key != "Tab") 
-    keyboardEvent.preventDefault();
-  keyValue.value = keyboardEvent.key;
+function handleInput(inputEvent: InputEvent) {
+  // Always cancel the native edit — the field is driven entirely by `formattedValue`.
+  inputEvent.preventDefault();
 
   if (props.readonly) return;
 
+  if (!model.value) parts.value = [new CurrencyInputPart(CurrencyPartType.Plus, 0)];
+
   const modelValue = parts.value.at(-1)!;
-  // console.log(keyboardEvent.key);
-  if (keyboardEvent.key == "Backspace") {
-    if(modelValue.amount == 0) {
-      if(parts.value.length > 1) 
-        parts.value.pop();
-    } else {
-      modelValue.amount -= modelValue.amount % 10;
-      modelValue.amount /= 10;
+  // console.log(inputEvent.inputType, inputEvent.data);
+
+  switch (inputEvent.inputType) {
+    case 'deleteContentBackward':
+    case 'deleteContentForward': {
+      if (modelValue.amount == 0) {
+        if (parts.value.length > 1)
+          parts.value.pop();
+      } else {
+        modelValue.amount -= modelValue.amount % 10;
+        modelValue.amount /= 10;
+      }
+      break;
     }
-  } else if(
-    keyboardEvent.key == "+" || keyboardEvent.key == "-" ||
-    keyboardEvent.key == "Add" || keyboardEvent.key == "Subtract"
-  ) {
-    addOperator(keyboardEvent.key);
-  } else {
-    const number = parseInt(keyboardEvent.key);
-    if (!Number.isNaN(number)) {
-        modelValue.amount *= 10;
-        modelValue.amount += number;
+    case 'insertText':
+    case 'insertCompositionText':
+    case 'insertFromPaste': {
+      const data = inputEvent.data ?? '';
+
+      if (data === '+' || data === '-') {
+        addOperator(data);
+        break;
+      }
+
+      // Handle multi-character input (paste, autocomplete, etc.) digit-by-digit.
+      for (const char of data) {
+        const number = parseInt(char, 10);
+        if (!Number.isNaN(number)) {
+          modelValue.amount *= 10;
+          modelValue.amount += number;
+        }
+      }
+      break;
     }
+    default:
+      break;
   }
+
   model.value = partsToValue(parts.value);
 }
 </script>
@@ -74,9 +91,8 @@ function handleInput(keyboardEvent: KeyboardEvent) {
   <UInput 
     ref="inputEl"
     type="tel"
-    :value="formattedValue" :disabled="props.readonly" @keydown="handleInput"
+    :value="formattedValue" :disabled="props.readonly" @beforeinput="handleInput"
   /> 
-  <UInput v-model="keyValue" />
   <UButton
     variant="outline"
     class="px-4 mx-2"
@@ -98,27 +114,11 @@ function handleInput(keyboardEvent: KeyboardEvent) {
 
 <style scoped>
 input {
-  /* Make the input look like a regular text field but not editable */
   cursor: default;
 }
 
 input:focus {
   border-color: #3b82f6;
-  /* blue-500 */
-}
-
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  /* display: none; <- Crashes Chrome on hover */
-  -webkit-appearance: none;
-  margin: 0;
-  /* <-- Apparently some margin are still there even though it's hidden */
-}
-
-input[type=number] {
-  appearance: inherit;
-  -moz-appearance: textfield;
-  /* Firefox */
 }
 .opr-button {
   margin: 0 2em;
