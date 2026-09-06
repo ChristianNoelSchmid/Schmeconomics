@@ -15,12 +15,21 @@ const chosenDefaultAccountName = computed(
 );
 
 const accountNames = computed<SelectMenuItem[]>(
-  () => accounts.value?.map(a => {
-    return {
-      key: a.id,
-      label: a.name,
-    };
-  }) ?? []
+  () => {
+    if(!accounts.value || accounts.value.length == 0) return [];
+    const accountNames = accounts.value?.map(a => {
+      return {
+        key: a.id,
+        label: a.name,
+      };
+    })
+
+    const chosenIndex = accountNames.findIndex(an => an.key == $defaultAccountId.value);
+    if(chosenIndex != null)
+      [accountNames[chosenIndex]!, accountNames[0]!] = [accountNames[0]!, accountNames[chosenIndex]!];
+
+    return accountNames;
+  }
 );
 
 async function logout() {
