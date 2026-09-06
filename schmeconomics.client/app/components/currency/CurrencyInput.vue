@@ -5,6 +5,7 @@ const inputEl = ref<{ inputRef: { $el: HTMLInputElement }} | null>(null);
 const props = withDefaults(defineProps<{readonly?: boolean}>(), { readonly: false });
 const model = defineModel<number>();
 const parts = ref<CurrencyInputPart[]>([new CurrencyInputPart(CurrencyPartType.Plus, model.value!)]);
+const keyValue = ref<string>("");
 function addOperator(
   operatorString: string
 ) {
@@ -39,6 +40,7 @@ function handleInput(keyboardEvent: KeyboardEvent) {
   if (!model.value) parts.value = [new CurrencyInputPart(CurrencyPartType.Plus, 0)];
   if (keyboardEvent.key != "Tab") 
     keyboardEvent.preventDefault();
+  keyValue.value = keyboardEvent.key;
 
   if (props.readonly) return;
 
@@ -74,6 +76,7 @@ function handleInput(keyboardEvent: KeyboardEvent) {
     type="tel"
     :value="formattedValue" :disabled="props.readonly" @keydown="handleInput"
   /> 
+  <UInput v-model="keyValue" />
   <UButton
     variant="outline"
     class="px-4 mx-2"
