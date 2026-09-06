@@ -1,9 +1,22 @@
 <script setup lang="ts">
 import { CurrencyInputPart, CurrencyPartType, stringToPartType as keyStringToPartType, partsToValue } from './currency-input-part';
 
+const inputEl = ref<{ inputRef: { $el: HTMLInputElement }} | null>(null);
 const props = withDefaults(defineProps<{readonly?: boolean}>(), { readonly: false });
 const model = defineModel<number>();
 const parts = ref<CurrencyInputPart[]>([new CurrencyInputPart(CurrencyPartType.Plus, model.value!)]);
+function addOperator(
+  operatorString: string
+) {
+  const modelValue = parts.value.at(-1)!;
+  const partType = keyStringToPartType(operatorString);
+  if(modelValue.amount == 0) {
+    modelValue.partType = partType;
+  } else {
+    parts.value.push(new CurrencyInputPart(partType, 0));
+  }
+  inputEl.value?.inputRef?.$el.focus();
+}
 
 const formattedValue = computed<string>(() => {
   if (!model.value) return '0.00';
@@ -43,12 +56,7 @@ function handleInput(keyboardEvent: KeyboardEvent) {
     keyboardEvent.key == "+" || keyboardEvent.key == "-" ||
     keyboardEvent.key == "Add" || keyboardEvent.key == "Subtract"
   ) {
-    const partType = keyStringToPartType(keyboardEvent.key);
-    if(modelValue.amount == 0) {
-      modelValue.partType = partType;
-    } else {
-      parts.value.push(new CurrencyInputPart(partType, 0));
-    }
+    addOperator(keyboardEvent.key);
   } else {
     const number = parseInt(keyboardEvent.key);
     if (!Number.isNaN(number)) {
@@ -62,9 +70,27 @@ function handleInput(keyboardEvent: KeyboardEvent) {
 
 <template>
   <UInput 
-    type="text"
+    ref="inputEl"
+    type="number"
     :value="formattedValue" :disabled="props.readonly" @keydown="handleInput"
   /> 
+  <UButton
+    variant="outline"
+    class="px-4 mx-2"
+    label="+"
+    size="xl"
+    color="info"
+    @click="addOperator('+')"
+  />
+  <UButton
+    variant="outline"
+    class="px-4"
+    label="-"
+    size="xl"
+    color="info"
+    @click="addOperator('-')"
+  />
+
 </template>
 
 <style scoped>
@@ -90,5 +116,8 @@ input[type=number] {
   appearance: inherit;
   -moz-appearance: textfield;
   /* Firefox */
+}
+.opr-button {
+  margin: 0 2em;
 }
 </style>
