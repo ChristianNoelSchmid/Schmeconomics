@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { CurrencyInputPart, CurrencyPartType, stringToPartType as keyStringToPartType, partsToValue } from './currency-input-part';
 
-const inputEl = ref<{ inputRef: { $el: HTMLInputElement }} | null>(null);
+const inputEl = ref<{ inputRef: HTMLInputElement } | null>(null);
 const props = withDefaults(defineProps<{readonly?: boolean}>(), { readonly: false });
 const model = defineModel<number>();
 const parts = ref<CurrencyInputPart[]>([new CurrencyInputPart(CurrencyPartType.Plus, model.value!)]);
@@ -16,7 +16,7 @@ function addOperator(
   } else {
     parts.value.push(new CurrencyInputPart(partType, 0));
   }
-  inputEl.value?.inputRef?.$el.focus();
+  inputEl.value?.inputRef?.focus();
 }
 
 const formattedValue = computed<string>(() => {
