@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { FormError } from '@nuxt/ui';
 import { onError } from '~/lib/form-error';
-import type { CategoryModel } from '~/lib/openapi';
+import { TransactionApi, type CategoryModel } from '~/lib/openapi';
 
 export interface CreateTransactionProp {
     category: CategoryModel,
@@ -44,6 +44,11 @@ function submitRequest() {
     transactionState.amount = 0;
     transactionState.notes = "";
 }
+function close() {
+    transactionState.amount = 0;
+    transactionState.notes = '';
+    emit('closed');
+}
 </script>
 
 <template>
@@ -63,7 +68,7 @@ function submitRequest() {
                     </UFormField>
 
                     <div class="flex space-x-4 justify-end">
-                        <UButton color="neutral" variant="ghost" @click="emit('closed')">
+                        <UButton color="neutral" variant="ghost" @click="close">
                             Cancel
                         </UButton>
                         <UButton type="submit" color="info" variant="solid" :disabled="!transactionState">
