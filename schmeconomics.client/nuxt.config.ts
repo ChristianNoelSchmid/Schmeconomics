@@ -22,7 +22,7 @@ export default defineNuxtConfig({
     registerType: 'autoUpdate',
     manifest: {
       name: 'Schmeconomics',
-      theme_color: '#fff',
+      theme_color: '#96ae9b',
       start_url: '/',
       description: 'A simple budgeting app',
       display: 'fullscreen',

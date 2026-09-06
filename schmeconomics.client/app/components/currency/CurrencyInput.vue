@@ -71,7 +71,7 @@ function handleInput(keyboardEvent: KeyboardEvent) {
 <template>
   <UInput 
     ref="inputEl"
-    type="phone"
+    type="tel"
     :value="formattedValue" :disabled="props.readonly" @keydown="handleInput"
   /> 
   <UButton
